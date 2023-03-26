@@ -1,0 +1,17 @@
+language: php
+
+php:
+  - 7.0
+
+env:
+  global:
+    - XDEBUG_MODE=coverage
+
+before_install:
+  - travis_retry composer self-update && composer --version
+
+install:
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --no-interaction --prefer-dist
+
+script:
+  - ./vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
