@@ -1,105 +1,133 @@
-<h1 align="center">Laravel Lang Generator</h1>
+
+<h1 align="center">Simple Queue</h1>
 
 <img src="./docs/logo.png" alt="Simple Queue" />
 <p align="center">
-<a href="https://packagist.org/packages/glebsky/laravel-lang-generator"><img src="https://badgen.net/github/release/glebsky/simplequeue" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/glebsky/laravel-lang-generator"><img src="http://poser.pugx.org/glebsky/simple-queue/downloads" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/glebsky/laravel-lang-generator"><img src="http://poser.pugx.org/glebsky/simple-queue/v/unstable" alt="Stable"></a>
-<a href="https://packagist.org/packages/glebsky/laravel-lang-generator"><img src="http://poser.pugx.org/glebsky/simple-queue/license" alt="License"></a>
-<a href="https://packagist.org/packages/glebsky/laravel-lang-generator"><img src="https://badgen.net/packagist/php/glebsky/simple-queue" alt="PHP Version"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://badgen.net/github/release/glebsky/simplequeue" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/downloads" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/v/unstable" alt="Stable"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/license" alt="License"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://badgen.net/packagist/php/glebsky/simple-queue" alt="PHP Version"></a>
 <br>
 <br>
-Searches for multilingual phrases in a Laravel project and automatically generates language files for you. You can search for new translation keys, delete unused keys, and quickly generate new language files.
+Simple queues and simple queue handling for your PHP project
+<p align="center">
+    <a href="README.md">English</a> | <a href="./docs/READMERU.md">Russian</a>
 </p>
 
 ---
 
 ## Installation
 
-You can start the installation through the <b>composer</b> using the command.
+The library is installed via composer.
 
 ```
 composer require glebsky/simple-queue
 ```
 
 ## Configuration
-To create configuration file of this package you can use command:
 
+You need to implement the `TransportInterface` interface.
+
+You can use MySql, Redis or any other storage that suits you.
+
+The data that is present in `Message` and your class must be based on this data.
+
+```shell
+$id - int
+$status - int
+$created_at - timestamp
+$updated_at - timestamp 
+$attempts - int
+$queue  - string
+$job - string
+$body - string
+$priority - int
+$error - string
 ```
-php artisan vendor:publish --tag=config
-```
-It will create configuration file in `app/config` with name `lang-generator`
 
-### About configuration
-
-<b>file_type</b>: is responsible for the type of the generated file. It is possible to generate both a json and an php array files. Posible values: `array` , `json`
-
----
-
-<b>file_name</b>: is responsible for the name of the generated files. By default it is `lang`.
-
----
-
-<b>languages</b>:  is responsible for the generated languages and accepts an array. Language folders with the specified data will be created. By default it just `en`.
-
----
+> For example, you can refer to `example/DBTranspot.php` which works on PDO basis.
 
 ## Usage
 
-### Main Command
+#### Create a task
 
-This command starts searching for translation keys in the `resource/views` and `app` folders according to the basic settings.
-Existing keys will not be removed, only new ones will be added.
+You need to create your own Job class to implement the interface `JobInterface`
 
+- `public $queueName` - property in this class You can assign a queue to a particular job. If this property is not
+  added, the queue will not be assigned.
+
+- `public $priority` - property in this class You can set the priority in numbers, the higher the number, the higher the
+  priority.
+
+`handle` method In this class will be executed when processing the queue. This is where you put the code you need.
+
+> An example class can be found in `example/TestJob.php`
+
+#### Adding a task to the queue
+
+The `Queue` class is used to add a task to the queue. We need to create an instance of our `TransportInterface` and
+connect it to the `Queue` class. Then we create our task - `TestJob` and add the task to the queue using the `dispatch`
+method
+
+```php
+$transport = new DBTransport(); // create transport object
+$queue = new Queue($transport); // add $transport to queue  
+$job = new TestJob('testmail@gmail.com','Subject','Message text'); //  create job
+$job->queueName = 'example_queue'; // you can change queue name
+$job->priority = 3; // you can change priority
+$result = $queue->dispatch($job); // send job to queue
 ```
-php artisan lang:generate
+
+#### Обработка очереди
+
+The queue is processed using the `Worker` class.
+
+```php
+$transport = new DBTransport();
+$worker = new Worker($transport);
+$worker->run();
 ```
-it will create new language files with found translation keys.
-By default name of lang file is `lang`
 
-![title](https://i.imgur.com/hvDrlVO.jpeg)
+You can create your own PHP script where tasks will be handled, and you can run this script via CLI.
 
-### Parameters
+```php
+// Worker.php
+<?php
+require_once '../vendor/autoload.php';
+require_once 'DBTransport.php';
 
-In addition, the command accepts several parameters that allow you to flexibly manage the package.
+use Glebsky\SimpleQueue\Example\DBTransport;
+use Glebsky\SimpleQueue\Worker;
+
+if (isset($argv[1])) {
+    $queues = explode(',', $argv[1]);
+} else {
+    $queues = [];
+}
+
+$transport = new DBTransport();
+$worker    = new Worker($transport);
+$worker->run($queues);
 ```
-php artisan lang:generate --type= --name= --langs= --sync --clear --path=
+
+An example of running a script.
+
+```sh
+php Worker.php example_queue,test_queue
 ```
-### About parameters
 
-`--type=` or `-T`:
+Where `example_queue,test_queue` are the comma-separated names of the queues to be processed. If you do not pass the
+queue name parameter, the handler will work with unnamed queues.
 
-is responsible for the type of the generated file. It is possible to generate both a json and an php array files. Posible values: `array` , `json`. <br>Example: `php artisan lang:generate --type=json`
+It is also possible to process a specific task, in a place convenient for you in your application.
 
----
+```php
+$transport = new DBTransport();
+$message = $transport->fetchMessage(['queue_name1','queue_name2'])
+$worker->processJob($message);
+```
 
-`--name=` or `-N`:
+### Tests To run tests, you can use the command `composer run-script test`
 
-is responsible for the name of the generated files. By default it is `lang`.
-
-Example: `php artisan lang:generate --name="pagination"`
-
----
-
-`--langs=` or `-L`:
-
-is responsible for the generated languages and accepts an array. Language folders with the specified data will be created. By default it just `en`. <br>Example: `php artisan lang:generate --langs="en" --langs="es"`
-
----
-
-`--sync` or `-S`:
-
-If you specify this flag, then all unused already existing translation keys will be deleted. <br>Example: `php artisan lang:generate --sync`
-
----
-
-`--clear` or `-C`:
-
-If you specify this flag, existing language files are removed and new ones are created. All existing translations will be removed.
-
-`NOTE! That NOT all language files are deleted, but only with the name specified in the settings.`
-
-Example: `php artisan lang:generate --clear`
-
-## Notes
-`lang:generate` will update your language files by writing them completely, meaning that any comments or special styling will be removed, so I recommend you backup your files.
+> Examples can be found in the `example` folder
