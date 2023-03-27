@@ -1,6 +1,7 @@
 {
   "name": "glebsky/simple-queue",
   "description": "Simple queues for your php application",
+  "version": "1.0.0",
   "keywords": [
     "php",
     "queue",
