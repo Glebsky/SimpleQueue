@@ -17,6 +17,7 @@
 ---
 
 ## Установка
+
 Установка библиотеки осуществляется через composer.
 ```
 composer require glebsky/simple-queue
@@ -125,6 +126,7 @@ $worker->processJob($message);
 ```
 
 ### Тесты
+
 Для запуска тестов можно использовать команду
 `composer run-script test`
 

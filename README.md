@@ -9,10 +9,12 @@
 <a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://badgen.net/packagist/php/glebsky/simple-queue" alt="PHP Version"></a>
 <br>
 <br>
-Simple queues and simple queue handling for your PHP project.
+Simple queues and simple queue handling for your PHP project
 <p align="center">
-    <a href="../docs/READMEUA.md">Ukrainian</a> | <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
+    <a href="./docs/READMEUA.md">Ukrainian</a> | <a href="README.md">English</a> | <a href="./docs/READMERU.md">Russian</a>
 </p>
+
+---
 
 ## Installation
 

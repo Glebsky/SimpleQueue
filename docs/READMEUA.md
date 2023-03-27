@@ -11,7 +11,7 @@
 <br>
 Прості черги та проста обробка черг для вашого PHP проекту
 <p align="center">
-    <a href="../docs/READMEUA.md">Ukrainian</a> | <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
+    <a href="READMEUA.md">Ukrainian</a> | <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
 </p>
 
 ---
