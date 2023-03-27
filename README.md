@@ -1,4 +1,3 @@
-
 <h1 align="center">Simple Queue</h1>
 
 <img src="./docs/logo.png" alt="Simple Queue" />
@@ -10,12 +9,10 @@
 <a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://badgen.net/packagist/php/glebsky/simple-queue" alt="PHP Version"></a>
 <br>
 <br>
-Simple queues and simple queue handling for your PHP project
+Simple queues and simple queue handling for your PHP project.
 <p align="center">
-    <a href="README.md">English</a> | <a href="./docs/READMERU.md">Russian</a>
+    <a href="../docs/READMEUA.md">Ukrainian</a> | <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
 </p>
-
----
 
 ## Installation
 
@@ -128,6 +125,9 @@ $message = $transport->fetchMessage(['queue_name1','queue_name2'])
 $worker->processJob($message);
 ```
 
-### Tests To run tests, you can use the command `composer run-script test`
+### Tests 
+To run tests, you can use the command `composer run-script test`
 
 > Examples can be found in the `example` folder
+
+<img src="./docs/uaflag.jpg" alt="UA FLAG" /> <small>Stand With Ukraine</small>

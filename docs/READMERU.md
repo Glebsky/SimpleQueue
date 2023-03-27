@@ -11,7 +11,7 @@
 <br>
 Простые очереди и простая обработка очередей для вашего PHP проекта
 <p align="center">
-    <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
+    <a href="../docs/READMEUA.md">Ukrainian</a> | <a href="../README.md">English</a> | <a href="READMERU.md">Russian</a>
 </p>
 
 ---
@@ -129,3 +129,5 @@ $worker->processJob($message);
 `composer run-script test`
 
 > Примеры вы можете найти в папке `example`
+
+<img src="uaflag.jpg" alt="UA FLAG" /> <small>Поддержи Украину</small>
