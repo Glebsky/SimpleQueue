@@ -16,13 +16,15 @@ class Worker
 
     public function run(array $queuesNames = [])
     {
-        $this->transport->init();
-
+        echo 'Worker started...' . PHP_EOL;
         while (true) {
             if ($message = $this->transport->fetchMessage($queuesNames)) {
+                echo 'Message ID: ', $message->id . '. Job: ' . $message->job . PHP_EOL;
                 try {
                     $this->processJob($message);
+                    echo 'Job finished.' . PHP_EOL;
                 } catch (Throwable $throwable) {
+                    echo 'Job failed.' . PHP_EOL;
                     $this->processFailureResult($throwable, $message);
                 }
                 continue;
@@ -74,7 +76,7 @@ class Worker
 
     private function processFailureResult(Throwable $exception, Message $message)
     {
-        $message->error  = $exception->getMessage();
+        $message->error = $exception->getMessage();
         $this->rejectJob($message);
     }
 }

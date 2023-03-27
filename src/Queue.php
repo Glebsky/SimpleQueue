@@ -39,7 +39,7 @@ class Queue
     public function deleteErrorQueues(array $queueNames = [])
     {
         $messages = $this->transport->getErrorMessages($queueNames);
-        foreach ($messages as $message){
+        foreach ($messages as $message) {
             $this->delete($message);
         }
     }

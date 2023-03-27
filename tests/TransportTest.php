@@ -11,8 +11,8 @@ class TransportTest extends TestCase
     public function testSendMessage()
     {
         $transport = new DBTransport();
-        $message = $this->generateTestMessage();
-        $message = $transport->send($message);
+        $message   = $this->generateTestMessage();
+        $message   = $transport->send($message);
 
         self::assertTrue($message instanceof Message);
     }
@@ -20,7 +20,7 @@ class TransportTest extends TestCase
     public function testFetchMessage()
     {
         $transport = new DBTransport();
-        $message = $transport->fetchMessage(['test_queue']);
+        $message   = $transport->fetchMessage(['test_queue']);
 
         self::assertTrue($message instanceof Message);
     }
@@ -28,18 +28,18 @@ class TransportTest extends TestCase
     public function testChangeMessageStatus()
     {
         $transport = new DBTransport();
-        $message = $transport->fetchMessage(['test_queue']);
-        $transport->changeMessageStatus($message,Message::STATUS_IN_PROCESS);
-        self::assertEquals(Message::STATUS_IN_PROCESS,$message->status);
+        $message   = $transport->fetchMessage(['test_queue']);
+        $transport->changeMessageStatus($message, Message::STATUS_IN_PROCESS);
+        self::assertEquals(Message::STATUS_IN_PROCESS, $message->status);
 
-        $transport->changeMessageStatus($message,Message::STATUS_NEW);
-        self::assertEquals(Message::STATUS_NEW,$message->status);
+        $transport->changeMessageStatus($message, Message::STATUS_NEW);
+        self::assertEquals(Message::STATUS_NEW, $message->status);
     }
 
     public function testDeleteMessage()
     {
         $transport = new DBTransport();
-        $message = $transport->fetchMessage(['test_queue']);
+        $message   = $transport->fetchMessage(['test_queue']);
 
         $result = $transport->deleteMessage($message);
         self::assertTrue($result);

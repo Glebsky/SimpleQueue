@@ -1,12 +1,12 @@
 <?php
 
-namespace Glebsky\SimpleQueueTest;
+namespace Glebsky\SimpleQueue\Example;
 
 use Glebsky\SimpleQueue\JobInterface;
 
-class TestJobFail implements JobInterface
+class TestJob implements JobInterface
 {
-    public $queueName = 'test_queue';
+    public $queueName = 'example_queue';
     public $priority  = 1;
 
     private $email;
@@ -24,6 +24,6 @@ class TestJobFail implements JobInterface
     public function handle(): string
     {
         mail($this->email, $this->subject, $this->body);
-        return self::ERROR;
+        return self::SUCCESS;
     }
 }

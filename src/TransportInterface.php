@@ -7,7 +7,7 @@ interface TransportInterface
     /**
      * Transport initialization
      */
-    public function init();
+    public function __construct();
 
     /**
      * Send message to queue

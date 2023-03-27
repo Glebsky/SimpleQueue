@@ -1,6 +1,6 @@
 <?php
 
-namespace Glebsky\SimpleQueueTest;
+namespace Glebsky\SimpleQueue\Example;
 
 use Glebsky\SimpleQueue\Message;
 use Glebsky\SimpleQueue\TransportInterface;
