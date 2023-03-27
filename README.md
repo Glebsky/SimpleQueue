@@ -78,7 +78,7 @@ $job->priority = 3; // you can change priority
 $result = $queue->dispatch($job); // send job to queue
 ```
 
-#### Обработка очереди
+#### Queue Processing
 
 The queue is processed using the `Worker` class.
 
