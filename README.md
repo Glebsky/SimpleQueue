@@ -133,6 +133,7 @@ $worker->processJob($message);
 
 ### Built-in PDOTransport class
 If you plan to set up communication based on SQL databases, you can use the built-in class `PDOTransport`
+
 Usage example:
 ```php
 <?php
