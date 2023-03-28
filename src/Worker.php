@@ -33,7 +33,12 @@ class Worker
         }
     }
 
-    public function processJob(Message $message)
+    /**
+     * Process current queue message
+     * @param Message $message
+     * @return bool
+     */
+    public function processJob(Message $message): bool
     {
         $this->transport->changeMessageStatus($message, Message::STATUS_IN_PROCESS);
 
@@ -41,8 +46,10 @@ class Worker
             $job    = unserialize($message->body);
             $result = $job->handle();
             $this->processSuccessResult($result, $message);
+            return true;
         } catch (Throwable $exception) {
             $this->processFailureResult($exception, $message);
+            return false;
         }
     }
 

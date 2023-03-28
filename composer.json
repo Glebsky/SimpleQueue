@@ -35,7 +35,7 @@
     "phpunit/phpunit": "^6.0"
   },
   "scripts": {
-    "test": "php vendor/bin/phpunit --colors=always",
-    "test-coverage": "php vendor/bin/phpunit --coverage-text --coverage-html ./docs/tmp/"
+    "test-simple-queues": "php vendor/bin/phpunit --colors=always",
+    "test-coverage-simple-queues": "php vendor/bin/phpunit --coverage-text --coverage-html ./docs/tmp/"
   }
 }

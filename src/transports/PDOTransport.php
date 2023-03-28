@@ -1,27 +1,65 @@
 <?php
 
-namespace Glebsky\SimpleQueueTest;
+namespace Glebsky\SimpleQueue\Transports;
 
 use Glebsky\SimpleQueue\Message;
 use Glebsky\SimpleQueue\TransportInterface;
 use InvalidArgumentException;
 use PDO;
+use PDOException;
+use ReflectionClass;
+use RuntimeException;
 
-class DBTransport implements TransportInterface
+class PDOTransport implements TransportInterface
 {
+
+    public  $tableName = 'jobs';
     private $connection;
-    private $tableName = 'jobs';
 
-    private $host     = 'localhost:3306';
-    private $dbname   = 'simple_queue';
-    private $username = 'root';
-    private $password = '';
-
-    public function __construct()
+    public function __construct(string $host, string $dbname, string $username, string $password,
+        string $tableName = 'jobs')
     {
-        $pdo = new PDO("mysql:host=$this->host;dbname=$this->dbname", $this->username, $this->password);
+        $this->tableName = $tableName;
+        $pdo             = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->connection = $pdo;
+    }
+
+    /**
+     * Create new table or check for existing table
+     * @return bool
+     * @throws PDOException
+     * @throws RuntimeException
+     */
+    public function migrate(): bool
+    {
+        $tableExists     = false;
+        $result          = $this->connection->query("SHOW TABLES LIKE '$this->tableName'");
+        if ($result !== false && $result->rowCount() > 0) {
+            $class          = new ReflectionClass(Message::class);
+            $properties     = $class->getProperties();
+            $requiredFields = [];
+            foreach ($properties as $property) {
+                $requiredFields[] = $property->getName();
+            }
+            $fieldsExist = true;
+            foreach ($requiredFields as $field) {
+                $result = $this->connection->query("SHOW COLUMNS FROM $this->tableName LIKE '$field'");
+                if ($result === false || $result->rowCount() == 0) {
+                    $fieldsExist = false;
+                    break;
+                }
+            }
+            if ($fieldsExist) {
+                $tableExists = true;
+            } else {
+                throw new RuntimeException('This table exists with invalid fields, please correct this table or delete it.');
+            }
+        }
+        if (!$tableExists) {
+            $this->createTable();
+        }
+        return true;
     }
 
     /**
@@ -203,5 +241,27 @@ class DBTransport implements TransportInterface
         $stmt->execute([':id' => $message->id]);
 
         return true;
+    }
+
+    /**
+     * Create new table for Jobs
+     * @return void
+     * @throws PDOException
+     */
+    private function createTable()
+    {
+        $sql = "CREATE TABLE $this->tableName (
+                id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                status int(1) NOT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+                attempts INT(11) UNSIGNED NOT NULL DEFAULT 0,
+                queue VARCHAR(255) DEFAULT NULL,
+                job VARCHAR(255) NOT NULL,
+                body TEXT NOT NULL,
+                priority INT(11) UNSIGNED NOT NULL DEFAULT 0,
+                error TEXT DEFAULT NULL)";
+
+        $this->connection->exec($sql);
     }
 }

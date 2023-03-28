@@ -4,10 +4,6 @@ namespace Glebsky\SimpleQueue;
 
 interface TransportInterface
 {
-    /**
-     * Transport initialization
-     */
-    public function __construct();
 
     /**
      * Send message to queue

@@ -3,6 +3,7 @@
 namespace Glebsky\SimpleQueueTest;
 
 use Glebsky\SimpleQueue\Message;
+use Glebsky\SimpleQueue\Transports\PDOTransport;
 use PHPUnit\Framework\TestCase;
 
 class TransportTest extends TestCase
@@ -10,7 +11,7 @@ class TransportTest extends TestCase
 
     public function testSendMessage()
     {
-        $transport = new DBTransport();
+        $transport = new PDOTransport('localhost:3306','simple_queue','root','');
         $message   = $this->generateTestMessage();
         $message   = $transport->send($message);
 
@@ -19,7 +20,7 @@ class TransportTest extends TestCase
 
     public function testFetchMessage()
     {
-        $transport = new DBTransport();
+        $transport = new PDOTransport('localhost:3306','simple_queue','root','');
         $message   = $transport->fetchMessage(['test_queue']);
 
         self::assertTrue($message instanceof Message);
@@ -27,7 +28,7 @@ class TransportTest extends TestCase
 
     public function testChangeMessageStatus()
     {
-        $transport = new DBTransport();
+        $transport = new PDOTransport('localhost:3306','simple_queue','root','');
         $message   = $transport->fetchMessage(['test_queue']);
         $transport->changeMessageStatus($message, Message::STATUS_IN_PROCESS);
         self::assertEquals(Message::STATUS_IN_PROCESS, $message->status);
@@ -38,7 +39,7 @@ class TransportTest extends TestCase
 
     public function testDeleteMessage()
     {
-        $transport = new DBTransport();
+        $transport = new PDOTransport('localhost:3306','simple_queue','root','');
         $message   = $transport->fetchMessage(['test_queue']);
 
         $result = $transport->deleteMessage($message);
