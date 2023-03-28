@@ -2,7 +2,7 @@
 
 <img src="./docs/logo.png" alt="Simple Queue" />
 <p align="center">
-<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://badgen.net/github/release/glebsky/simplequeue" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/v" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/v/unstable" alt="Stable"></a>
 <a href="https://packagist.org/packages/glebsky/simple-queue"><img src="https://poser.pugx.org/glebsky/simple-queue/license" alt="License"></a>
