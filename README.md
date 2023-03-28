@@ -47,6 +47,10 @@ $error - string
 
 > For example, you can refer to `example/DBTranspot.php` which works on PDO basis.
 
+> You can also use the ready-made `Transport` class `Glebsky\SimpleQueue\Transports\PDOTransport` which is based on PDO and works with SQL databases.
+>
+> To create a table of queues in the Database, the `migrate` method is present in this class
+
 ## Usage
 
 #### Create a task
@@ -127,8 +131,53 @@ $message = $transport->fetchMessage(['queue_name1','queue_name2'])
 $worker->processJob($message);
 ```
 
+### Built-in PDOTransport class
+If you plan to set up communication based on SQL databases, you can use the built-in class `PDOTransport`
+Usage example:
+```php
+<?php
+
+use Glebsky\SimpleQueue\Example\TestJob;
+use Glebsky\SimpleQueue\Queue;
+use Glebsky\SimpleQueue\Transports\PDOTransport;
+use Glebsky\SimpleQueue\Worker;
+
+require_once '../vendor/autoload.php';
+require_once 'TestJob.php';
+
+//credentials
+$host = 'localhost:3306';
+$db_name = 'simple_queue';
+$username = 'root';
+$password = '';
+$jobTableName = 'jobs';
+
+//initialize PDO connection
+$transport = new PDOTransport($host, $db_name, $username, $password, $jobTableName);
+
+//check for migrations and existing 'jobs' table
+$transport->migrate();
+
+//Create new queue and add new job
+$queue = new Queue($transport);
+$job = new TestJob('testmail@gmail.com', 'Test Subject', 'Test Message text');
+//set properties for queue
+$job->priority = 3;
+//set queueName
+$job->queueName = 'email_queue';
+// add job to queue
+$result = $queue->dispatch($job);
+
+//run worker to handle queue
+$worker = new Worker($transport);
+$worker->run(['email_queue']);
+//or u can handle single job
+$message = $transport->fetchMessage(['email_queue']);
+$result = $worker->processJob($message); // true or false
+```
+
 ### Tests 
-To run tests, you can use the command `composer run-script test`
+To run tests, you can use the command `composer run-script test-simple-queues`
 
 > Examples can be found in the `example` folder
 

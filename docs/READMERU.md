@@ -42,8 +42,11 @@ $body - string
 $priority - int
 $error - string
 ```
-
 > Для примера, можете ориентироваться на `example/DBTranspot.php` который работает на основе PDO
+
+> Также вы можете использовать готовый `Transport` класс `Glebsky\SimpleQueue\Transports\PDOTransport` который устроен на основе PDO и работает с SQL базами данных.
+> 
+> Для создания таблицы очередей в Базе данных в данном классе присутствует метод `migrate`
 
 ## Использование
 
@@ -125,10 +128,55 @@ $message = $transport->fetchMessage(['queue_name1','queue_name2'])
 $worker->processJob($message);
 ```
 
+### Встроенный класс PDOTransport
+Вы если Вы планируете настроить связь на основе SQL баз данных, вы можете использовать встроенный класс `PDOTransport`
+Пример использования:
+```php
+<?php
+
+use Glebsky\SimpleQueue\Example\TestJob;
+use Glebsky\SimpleQueue\Queue;
+use Glebsky\SimpleQueue\Transports\PDOTransport;
+use Glebsky\SimpleQueue\Worker;
+
+require_once '../vendor/autoload.php';
+require_once 'TestJob.php';
+
+//credentials
+$host         = 'localhost:3306';
+$db_name      = 'simple_queue';
+$username     = 'root';
+$password     = '';
+$jobTableName = 'jobs';
+
+//initialize PDO connection
+$transport = new PDOTransport($host, $db_name, $username, $password, $jobTableName);
+
+//check for migrations and existing 'jobs' table
+$transport->migrate();
+
+//Create new queue and add new job
+$queue = new Queue($transport);
+$job   = new TestJob('testmail@gmail.com', 'Test Subject', 'Test Message text');
+//set properties for queue
+$job->priority = 3;
+//set queue Name
+$job->queueName = 'email_queue';
+// add job to queue
+$result = $queue->dispatch($job);
+
+//run worker to handle queue
+$worker = new Worker($transport);
+$worker->run(['email_queue']);
+//or u can user to handle single job
+$message = $transport->fetchMessage(['email_queue']);
+$result  = $worker->processJob($message); // true or false
+```
+
 ### Тесты
 
 Для запуска тестов можно использовать команду
-`composer run-script test`
+`composer run-script test-simple-queues`
 
 > Примеры вы можете найти в папке `example`
 
